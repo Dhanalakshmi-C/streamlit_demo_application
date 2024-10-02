@@ -1,0 +1,9 @@
+torch==2.3.1
+torchvision==0.18.1
+segmentation-models-pytorch==0.3.3
+streamlit==1.38.0
+ultralytics==8.2.36
+Pillow==10.3.0
+numpy==1.26.4
+opencv-python==4.9.0.80
+opencv-python-headless==4.10.0.84
