@@ -505,7 +505,7 @@ def main():
 
 
         # Background image path
-        background_image_path = os.path.join("assets", "StreetDesign.png"
+        background_image_path = os.path.join("assets", "StreetDesign.png")
         if os.path.exists(image_path):
             st.image(image_path, caption='Street Design')
         else:
