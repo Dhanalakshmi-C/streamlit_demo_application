@@ -505,7 +505,7 @@ def main():
 
 
         # Background image path
-        background_image_path = "/home/kite/Downloads/StreetDesign.png"
+        background_image_path = "StreetDesign.png"
 
         if uploaded_file is None:
             st.image(background_image_path, use_column_width=True)
