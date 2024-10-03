@@ -129,7 +129,7 @@ num_classes = 4
 
 
 # Define the path to your zip file
-model_zip_path = '/home/kite/ArtificialIntelligence/Delaware/model_weights.zip'
+model_zip_path = 'model_weights.zip'
 
 # Extract the zip file if it exists
 if os.path.exists(model_zip_path):
