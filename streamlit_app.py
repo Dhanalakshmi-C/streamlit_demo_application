@@ -127,28 +127,52 @@ class LinkNet(nn.Module):
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_classes = 4
 
+
+# Define the path to your zip file
+model_zip_path = 'streamlit_demo_application/model_weights.zip'
+
+# Extract the zip file if it exists
+if os.path.exists(model_zip_path):
+    with zipfile.ZipFile(model_zip_path, 'r') as zip_ref:
+        zip_ref.extractall("model_directory")  # Extract to a specific directory
+else:
+    raise FileNotFoundError(f"{model_zip_path} does not exist.")
+
 # Load pretrained models
-unet_path = 'unet_model(multi).pth'
-fpn_path = 'FPN_model(multi)_out.pth'
-link_path = 'linknet_multiclass(new)_out.pth'
+unet_path = os.path.join("model_directory", "unet_model(multi).pth")
+fpn_path = os.path.join("model_directory", "FPN_model(multi)_out.pth")
+link_path = os.path.join("model_directory", "linknet_multiclass(new)_out.pth")
 
-unet_model = UNet(num_classes=num_classes)
-unet_model.load_state_dict(torch.load(unet_path, map_location=device))
-unet_model.to(device).eval()
+# Function to check and load model
+def load_model(model_path, model_class, num_classes, device):
+    if os.path.exists(model_path):
+        print(f"Model file found at: {model_path}")
+        model = model_class(num_classes=num_classes)  # Instantiate the model
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        model.to(device).eval()  # Move to device and set to eval mode
+        return model
+    else:
+        raise FileNotFoundError(f"{model_path} does not exist after extraction.")
 
-fpn_model = smp.FPN(encoder_name='resnet34', encoder_weights='imagenet', in_channels=3, classes=num_classes)
-fpn_model.load_state_dict(torch.load(fpn_path, map_location=device))
-fpn_model.to(device).eval()
+# Specify the number of classes and device (e.g., CPU or GPU)
+num_classes = 5  # Adjust based on your application
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-linknet_model = LinkNet(num_classes=num_classes)
-linknet_model.load_state_dict(torch.load(link_path, map_location=device))
-linknet_model.to(device).eval()
+# Check and load each model
+try:
+    unet_model = load_model(unet_path, UNet, num_classes, device)
+    fpn_model = load_model(fpn_path, smp.FPN, num_classes, device)
+    linknet_model = load_model(link_path, LinkNet, num_classes, device)
 
-models = {
-    "UNet": unet_model,
-    "FPN": fpn_model,
-    "LinkNet": linknet_model
-}
+    # Store the models in a dictionary for later use
+    models = {
+        "UNet": unet_model,
+        "FPN": fpn_model,
+        "LinkNet": linknet_model
+    }
+
+except FileNotFoundError as e:
+    print(e)
 
 
 # Image preprocessing function
