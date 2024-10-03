@@ -505,8 +505,12 @@ def main():
 
 
         # Background image path
-        background_image_path = "StreetDesign.png"
-
+        background_image_path = os.path.join("assets", "StreetDesign.png"
+        if os.path.exists(image_path):
+            st.image(image_path, caption='Street Design')
+        else:
+            st.error(f"Image not found at {image_path}")
+        
         if uploaded_file is None:
             st.image(background_image_path, use_column_width=True)
         else:
