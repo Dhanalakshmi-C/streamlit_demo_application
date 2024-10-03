@@ -147,12 +147,16 @@ link_path = os.path.join("model_directory", "linknet_multiclass(new)_out.pth")
 def load_model(model_path, model_class, num_classes, device):
     if os.path.exists(model_path):
         print(f"Model file found at: {model_path}")
-        model = model_class(num_classes=num_classes)  # Instantiate the model
+        if model_class == smp.FPN:  # Check if the model is FPN
+            model = model_class(encoder_name='resnet34', encoder_weights='imagenet', in_channels=3, classes=num_classes)
+        else:
+            model = model_class(num_classes=num_classes)  # For other models that require num_classes
+
         model.load_state_dict(torch.load(model_path, map_location=device))
         model.to(device).eval()  # Move to device and set to eval mode
         return model
     else:
-        raise FileNotFoundError(f"{model_path} does not exist after extraction.")
+        raise FileNotFoundError(f"{model_path} does not exist.")
 
 # Check and load each model
 try:
