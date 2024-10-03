@@ -154,10 +154,6 @@ def load_model(model_path, model_class, num_classes, device):
     else:
         raise FileNotFoundError(f"{model_path} does not exist after extraction.")
 
-# Specify the number of classes and device (e.g., CPU or GPU)
-num_classes = 5  # Adjust based on your application
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 # Check and load each model
 try:
     unet_model = load_model(unet_path, UNet, num_classes, device)
