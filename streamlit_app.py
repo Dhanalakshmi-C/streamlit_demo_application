@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 import segmentation_models_pytorch as smp
 import numpy as np
 import cv2
-cv2.headless = True
+# cv2.headless = True
 import torch.nn.functional as F
 import io
 import zipfile
