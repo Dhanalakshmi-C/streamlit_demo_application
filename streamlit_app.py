@@ -557,7 +557,7 @@ def main():
                 intersection_points = find_contour_intersection(sidewalk_mask, crosswalk_mask)
 
             if show_suggestion and intersection_points:
-                icon_path = "/home/kite/Downloads/traffic-signal.png"
+                icon_path = "assets/traffic-signal.png"
                 signal_icon = Image.open(icon_path).convert("RGBA")
                 icon_size = 50
                 signal_icon = signal_icon.resize((icon_size, icon_size))
