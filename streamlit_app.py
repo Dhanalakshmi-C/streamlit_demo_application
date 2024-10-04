@@ -129,49 +129,106 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 num_classes = 4
 
 
-# Define the path to your zip file
-model_zip_path = 'model_weights.zip'
+# # Define the path to your zip file
+# model_zip_path = 'model_weights.zip'
 
-# Extract the zip file if it exists
-if os.path.exists(model_zip_path):
-    with zipfile.ZipFile(model_zip_path, 'r') as zip_ref:
-        zip_ref.extractall("model_directory")  # Extract to a specific directory
-else:
-    raise FileNotFoundError(f"{model_zip_path} does not exist.")
+# # Extract the zip file if it exists
+# if os.path.exists(model_zip_path):
+#     with zipfile.ZipFile(model_zip_path, 'r') as zip_ref:
+#         zip_ref.extractall("model_directory")  # Extract to a specific directory
+# else:
+#     raise FileNotFoundError(f"{model_zip_path} does not exist.")
 
-# Load pretrained models
-unet_path = os.path.join("model_directory", "unet_model(multi).pth")
-fpn_path = os.path.join("model_directory", "FPN_model(multi)_out.pth")
-link_path = os.path.join("model_directory", "linknet_multiclass(new)_out.pth")
+# # Load pretrained models
+# unet_path = os.path.join("model_directory", "unet_model(multi).pth")
+# fpn_path = os.path.join("model_directory", "FPN_model(multi)_out.pth")
+# link_path = os.path.join("model_directory", "linknet_multiclass(new)_out.pth")
 
-# Function to check and load model
+# # Function to check and load model
+# def load_model(model_path, model_class, num_classes, device):
+#     if os.path.exists(model_path):
+#         print(f"Model file found at: {model_path}")
+#         if model_class == smp.FPN:  # Check if the model is FPN
+#             model = model_class(encoder_name='resnet34', encoder_weights='imagenet', in_channels=3, classes=num_classes)
+#         else:
+#             model = model_class(num_classes=num_classes)  # For other models that require num_classes
+
+#         model.load_state_dict(torch.load(model_path, map_location=device))
+#         model.to(device).eval()  # Move to device and set to eval mode
+#         return model
+#     else:
+#         raise FileNotFoundError(f"{model_path} does not exist.")
+
+# # Check and load each model
+# try:
+#     unet_model = load_model(unet_path, UNet, num_classes, device)
+#     fpn_model = load_model(fpn_path, smp.FPN, num_classes, device)
+#     linknet_model = load_model(link_path, LinkNet, num_classes, device)
+
+#     # Store the models in a dictionary for later use
+#     models = {
+#         "UNet": unet_model,
+#         "FPN": fpn_model,
+#         "LinkNet": linknet_model
+#     }
+
+# except FileNotFoundError as e:
+#     print(e)
+
+
+import gdown
+import os
+import torch
+import segmentation_models_pytorch as smp
+import torch.nn as nn
+
+# Define model paths in Google Drive (Replace with your actual file IDs)
+unet_drive_id = 'https://drive.google.com/file/d/1bZZL6ejdN2M71O3-oCL3MBYC_P1L_gkE/view?usp=sharing'
+fpn_drive_id = 'YOUR_FPN_DRIVE_FILE_ID'
+linknet_drive_id = 'https://drive.google.com/file/d/1Q3NEA_BgjX849gLpasaYirH7QHlRniLx/view?usp=sharing'
+
+# Download models from Google Drive if they don't already exist
+def download_model_from_drive(drive_id, output_path):
+    if not os.path.exists(output_path):
+        url = f"https://drive.google.com/uc?id={drive_id}"
+        gdown.download(url, output_path, quiet=False)
+
+# Define the paths where the models will be saved locally
+unet_model_path = 'unet_model(multi).pth'
+fpn_model_path = 'FPN_model(multi)_out.pth'
+linknet_model_path = 'linknet_multiclass(new)_out.pth'
+
+# Download the models if not already downloaded
+download_model_from_drive(unet_drive_id, unet_model_path)
+download_model_from_drive(fpn_drive_id, fpn_model_path)
+download_model_from_drive(linknet_drive_id, linknet_model_path)
+
+# Load the models
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+num_classes = 4
+
 def load_model(model_path, model_class, num_classes, device):
     if os.path.exists(model_path):
-        print(f"Model file found at: {model_path}")
         if model_class == smp.FPN:  # Check if the model is FPN
             model = model_class(encoder_name='resnet34', encoder_weights='imagenet', in_channels=3, classes=num_classes)
         else:
             model = model_class(num_classes=num_classes)  # For other models that require num_classes
-
         model.load_state_dict(torch.load(model_path, map_location=device))
         model.to(device).eval()  # Move to device and set to eval mode
         return model
     else:
         raise FileNotFoundError(f"{model_path} does not exist.")
-
-# Check and load each model
 try:
-    unet_model = load_model(unet_path, UNet, num_classes, device)
-    fpn_model = load_model(fpn_path, smp.FPN, num_classes, device)
-    linknet_model = load_model(link_path, LinkNet, num_classes, device)
-
+    # Load each model
+    unet_model = load_model(unet_model_path, UNet, num_classes, device)
+    fpn_model = load_model(fpn_model_path, smp.FPN, num_classes, device)
+    linknet_model = load_model(linknet_model_path, LinkNet, num_classes, device)
     # Store the models in a dictionary for later use
     models = {
-        "UNet": unet_model,
-        "FPN": fpn_model,
-        "LinkNet": linknet_model
-    }
-
+            "UNet": unet_model,
+            "FPN": fpn_model,
+            "LinkNet": linknet_model
+        }
 except FileNotFoundError as e:
     print(e)
 
